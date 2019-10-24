@@ -4,7 +4,8 @@ import ResultItem from './ResultItem'
 class ResultList extends React.Component{
   
     render(){   
-        if (this.props.results) {
+        console.log(this.props.results)
+        if (this.props.results.length !== 0) {
         const resultItems = this
             .props
             .results
@@ -26,7 +27,7 @@ class ResultList extends React.Component{
                 )
          } else {
              return(
-                 <div>loading</div>
+                 <div>search for something!</div>
              )
          }
       

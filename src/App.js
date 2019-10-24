@@ -8,18 +8,15 @@ class App extends React.Component {
     super(props);
     this.state = {
       data: STORE,
-      books: {},
-      query: null,
-      q: 'harry%20potter',
-      search: 'harry potter',
+      books: [],
+      q: 'lion',
+      search: 'lion king',
       printType: '',
       bookType: ''
     }
   }
 
-  updateSearch = (event) => {
-    this.setState({ search: event.target.value })
-  }
+ 
 
   updatePrintType = (event) => {
     console.log(event.target.value)
@@ -33,19 +30,13 @@ class App extends React.Component {
 
   
 
-  componentDidMount() {
-    const params = {
-      "q": 'harry potter',
-      "key": "AIzaSyDfsnqQT7_iTbnibRhMT6LToDhvWgeAVdc"
-    }
+  handleSearch = (event, searchInput) => {
+    event.preventDefault();
+   
+    const bookUrl = 'https://www.googleapis.com/books/v1/volumes/'
+    const key ='AIzaSyDfsnqQT7_iTbnibRhMT6LToDhvWgeAVdc'
+    const url = this.formatQueryString(bookUrl,searchInput,key)
 
-    function formatQueryString(params) {
-      const queryItems = Object.keys(params)
-        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
-      return queryItems.join('&');
-    }
-    const bookUrl = 'https://www.googleapis.com/books/v1/volumes/?'
-    const url = bookUrl + formatQueryString(params)
     console.log(url)
 
     fetch(url)
@@ -57,7 +48,7 @@ class App extends React.Component {
       })
       .then(res => res.json())
       .then(resJson => this.setState({
-        books: resJson.items
+        books: resJson
       }))
    
       .catch(err => {
@@ -66,21 +57,43 @@ class App extends React.Component {
   }
   // API call happens here but how?
   // callback props
+  formatQueryString = (bookUrl,searchInput,key) => {
+    const {bookType , printType} = this.state
+    let formattedQuery;
+    if (searchInput !== '') {
+      formattedQuery = '?q=' + searchInput;
+    }
+    if(bookType !== '') {
+      formattedQuery = formattedQuery + '&filter=' + bookType
+    }
+    if(printType !=='') {
+      formattedQuery = formattedQuery + '&bookType=' + printType   
+    }
+    const formattedUrl = bookUrl + formattedQuery + '&key' + key;
+    console.log('URL:', formattedUrl);
+    return formattedUrl
+  } 
+
+
+
   render() {
+    const { books } = this.state
+    console.log({books})
     const results = this.state.data
-    ? <ResultList results ={this.state.data}/>
+    ? <ResultList results ={ books }/> 
     : <div>nothing</div>
-    console.log(this.state.books)
+    console.log(this.state.data.length)
     return (
       <main className='App'>
         <h1>Hello world!</h1>
         <Searchbox
-          search={this.state.search}
+
           bookType={this.state.bookType}
           printType={this.state.print}
           updateSearch={this.updateSearch}
           updatePrintType={this.updatePrintType}
           updateBookType={this.updateBookType}
+          handleSearch={this.handleSearch}
         />
         
       {results}

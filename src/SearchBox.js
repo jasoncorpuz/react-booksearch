@@ -7,25 +7,33 @@ import React from 'react';
 class SearchBox extends React.Component {
     constructor(props){
         super(props);
-        this.state = {
-            
+        this.state = {    
+                searchInput:''
+            }
             
         };
-    }
-
+    
+    updateSearch = (event) => {
+        this.setState({
+            searchInput: event.target.value 
+        });
+      }
  
     render(){
+        const { handleSearch } = this.props
+        const { searchInput } = this.state
         return(
             <div>
-                <form className='search-box'>
+                <form className='search-box'
+                      onSubmit={ event => handleSearch(event, searchInput)}>
                     <label htmlFor='search-bar'>Book Search:</label>
                     <input 
                         type='text' 
                         name='title' 
                         id='title' 
                         placeholder='search a book...' 
-                        value={this.props.search}
-                        onChange={this.props.updateSearch}
+                        value={this.state.searchInput}
+                        onChange={this.updateSearch}
                         >        
                     </input>
                     <select 
